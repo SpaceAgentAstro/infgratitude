@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Gratitude Generator</title>
+    <style>
+        /* General body styling */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #84fab0, #8fd3f4); /* Beautiful gradient background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            overflow: hidden;
+        }
+        
+        /* Center content styling */
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px; /* Ensure content doesn't stretch too wide */
+        }
+        
+        /* Header text animation */
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite; /* Smooth pulsating animation */
+        }
+        
+        /* Keyframes for the pulsating effect */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* Styling for the gratitude message */
+        .gratitude {
+            font-size: 1.5em;
+            padding: 20px;
+            background: #fff; /* White background for contrast */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            margin-bottom: 20px;
+        }
+        
+        /* Inline animation block styling */
+        .animation {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        /* Button styling */
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px; /* Rounded button */
+            background: #ff9a9e; /* Eye-catching gradient */
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease; /* Smooth hover transition */
+        }
+        button:hover {
+            background: #f77062; /* Darker hover color */
+        }
+        
+        /* Footer styling */
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        footer a {
+            color: #f77062;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Infinite Gratitude Generator</h1>
+        <div class="gratitude" id="gratitude">Click below to see something amazing!</div> <!-- Initial message -->
+        <button onclick="generateGratitude()">Generate Gratitude</button> <!-- Button to trigger new message -->
+        <div class="animation" id="animation"></div> <!-- Place for emoji animations -->
+        <footer>
+            <p>Made with ❤️ to spread positivity. <a href="#" onclick="shareGratitude()">Share this!</a></p>
+        </footer>
+    </div>
+
+    <script>
+        /* Array of positive messages to display */
+        const messages = [
+            "You're awesome!",
+            "Thank you for being you!",
+            "The world is better with you in it!",
+            "You're capable of amazing things!",
+            "Every day is a new opportunity!",
+            "Keep shining your light!",
+            "Your smile brightens the room!",
+            "You're loved more than you know!",
+            "You make a difference!",
+            "Thank you for being kind!",
+            "Dream big and achieve more!",
+            "Your actions inspire others!",
+            "You bring joy to those around you!",
+            "Believe in yourself, always!"
+        ];
+
+        /* Array of emojis for animation effects */
+        const animations = [
+            '🌟', '💖', '✨', '💫', '🎉', '🎈', '🌈', '💐', '🎵', '🌺'
+        ];
+
+        /* Function to generate and display a new gratitude message and emoji */
+        function generateGratitude() {
+            const index = Math.floor(Math.random() * messages.length); // Random index for messages
+            const animationIndex = Math.floor(Math.random() * animations.length); // Random index for animations
+
+            const gratitudeDiv = document.getElementById('gratitude');
+            gratitudeDiv.textContent = messages[index]; // Update the message content
+            gratitudeDiv.style.animation = 'fadeIn 1s'; // Add fade-in animation
+
+            const animationDiv = document.getElementById('animation');
+            animationDiv.textContent = animations[animationIndex]; // Display a random emoji
+            animationDiv.style.animation = 'fadeIn 1s';
+
+            // Reset animations after completion to allow replay
+            setTimeout(() => {
+                gratitudeDiv.style.animation = '';
+                animationDiv.style.animation = '';
+            }, 1000);
+        }
+
+        /* Function to open a Twitter share window with pre-filled text */
+        function shareGratitude() {
+            const url = encodeURIComponent(window.location.href); // Encode current page URL
+            const text = encodeURIComponent("Check out the Infinite Gratitude Generator! Spread some positivity: "); // Message to share
+            const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`; // Construct Twitter URL
+            window.open(shareUrl, '_blank'); // Open in new tab
+        }
+
+        // Generate an initial gratitude message when the page loads
+        document.body.onload = generateGratitude;
+    </script>
+</body>
+</html>
