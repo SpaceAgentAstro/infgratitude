@@ -5,157 +5,193 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinite Gratitude Generator</title>
     <style>
-        /* General body styling */
+        :root {
+            --bg-light: linear-gradient(120deg, #84fab0, #8fd3f4);
+            --bg-dark: linear-gradient(120deg, #333, #111);
+            --text-light: #333;
+            --text-dark: #f0f0f0;
+            --btn-light: #ff9a9e;
+            --btn-dark: #ff758c;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(120deg, #84fab0, #8fd3f4); /* Beautiful gradient background */
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Full viewport height */
-            overflow: hidden;
+            height: 100vh;
+            flex-direction: column;
+            transition: all 0.3s ease;
         }
-        
-        /* Center content styling */
+
         .container {
             text-align: center;
             width: 90%;
-            max-width: 600px; /* Ensure content doesn't stretch too wide */
+            max-width: 600px;
         }
-        
-        /* Header text animation */
+
         h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite; /* Smooth pulsating animation */
+            font-size: 2.5em;
+            margin-bottom: 15px;
         }
-        
-        /* Keyframes for the pulsating effect */
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
+
+        .streak-container {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 1.2em;
         }
-        
-        /* Styling for the gratitude message */
-        .gratitude {
-            font-size: 1.5em;
-            padding: 20px;
-            background: #fff; /* White background for contrast */
-            border-radius: 10px; /* Rounded corners */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-            margin-bottom: 20px;
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Inline animation block styling */
-        .animation {
-            display: inline-block;
+
+        .day {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            font-size: 1em;
+            text-align: center;
+            border-radius: 5px;
+            background: #ddd;
+            transition: background 0.3s ease;
+        }
+
+        .streak-day {
+            background: #ff9a9e !important;
+            color: white;
+            font-weight: bold;
+        }
+
+        .current-day {
+            border: 2px solid #ff758c;
+            font-weight: bold;
+        }
+
+        .toggle-buttons {
             margin-top: 10px;
         }
-        
-        /* Button styling */
-        button {
-            font-size: 1em;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px; /* Rounded button */
-            background: #ff9a9e; /* Eye-catching gradient */
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.3s ease; /* Smooth hover transition */
-        }
-        button:hover {
-            background: #f77062; /* Darker hover color */
-        }
-        
-        /* Footer styling */
-        footer {
-            margin-top: 40px;
-            font-size: 0.9em;
-            color: #555;
-        }
-        footer a {
-            color: #f77062;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
+
+        .reminder {
+            margin-top: 15px;
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Infinite Gratitude Generator</h1>
-        <div class="gratitude" id="gratitude">Click below to see something amazing!</div> <!-- Initial message -->
-        <button onclick="generateGratitude()">Generate Gratitude</button> <!-- Button to trigger new message -->
-        <div class="animation" id="animation"></div> <!-- Place for emoji animations -->
+
+        <div class="streak-container">
+            🔥 Streak: <span id="streakCount">0</span> days | 🌟 Highest Streak: <span id="highStreak">0</span> days
+            <div class="toggle-buttons">
+                <button onclick="setView('weekly')">Weekly</button>
+                <button onclick="setView('monthly')">Monthly</button>
+            </div>
+            <div class="calendar" id="calendarGrid"></div>
+            <div class="reminder" id="reminder"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="generateGratitude()">Generate Gratitude</button>
+        </div>
+
         <footer>
-            <p>Made with ❤️ to spread positivity. <a href="#" onclick="shareGratitude()">Share this!</a></p>
+            <p>Made with ❤️ to spread positivity.</p>
         </footer>
     </div>
 
     <script>
-        /* Array of positive messages to display */
-        const messages = [
-            "You're awesome!",
-            "Thank you for being you!",
-            "The world is better with you in it!",
-            "You're capable of amazing things!",
-            "Every day is a new opportunity!",
-            "Keep shining your light!",
-            "Your smile brightens the room!",
-            "You're loved more than you know!",
-            "You make a difference!",
-            "Thank you for being kind!",
-            "Dream big and achieve more!",
-            "Your actions inspire others!",
-            "You bring joy to those around you!",
-            "Believe in yourself, always!"
-        ];
+        let streak = JSON.parse(localStorage.getItem("streak")) || { count: 0, lastDate: null, high: 0 };
+        let streakDays = JSON.parse(localStorage.getItem("streakDays")) || [];
+        let viewMode = "monthly";
 
-        /* Array of emojis for animation effects */
-        const animations = [
-            '🌟', '💖', '✨', '💫', '🎉', '🎈', '🌈', '💐', '🎵', '🌺'
-        ];
+        function updateStreak() {
+            const today = new Date().toDateString();
+            if (streak.lastDate === today) return;
 
-        /* Function to generate and display a new gratitude message and emoji */
-        function generateGratitude() {
-            const index = Math.floor(Math.random() * messages.length); // Random index for messages
-            const animationIndex = Math.floor(Math.random() * animations.length); // Random index for animations
+            if (streak.lastDate && new Date(streak.lastDate).getTime() + 86400000 >= new Date().getTime()) {
+                streak.count += 1;
+            } else {
+                streak.count = 1;
+                showReminder();
+            }
 
-            const gratitudeDiv = document.getElementById('gratitude');
-            gratitudeDiv.textContent = messages[index]; // Update the message content
-            gratitudeDiv.style.animation = 'fadeIn 1s'; // Add fade-in animation
+            streak.high = Math.max(streak.count, streak.high);
+            streak.lastDate = today;
+            if (!streakDays.includes(today)) streakDays.push(today);
 
-            const animationDiv = document.getElementById('animation');
-            animationDiv.textContent = animations[animationIndex]; // Display a random emoji
-            animationDiv.style.animation = 'fadeIn 1s';
+            localStorage.setItem("streak", JSON.stringify(streak));
+            localStorage.setItem("streakDays", JSON.stringify(streakDays));
 
-            // Reset animations after completion to allow replay
+            document.getElementById("streakCount").textContent = streak.count;
+            document.getElementById("highStreak").textContent = streak.high;
+            updateCalendar();
+        }
+
+        function showReminder() {
+            document.getElementById("reminder").textContent = "❗ Don't forget to log gratitude today!";
             setTimeout(() => {
-                gratitudeDiv.style.animation = '';
-                animationDiv.style.animation = '';
-            }, 1000);
+                document.getElementById("reminder").textContent = "";
+            }, 5000);
         }
 
-        /* Function to open a Twitter share window with pre-filled text */
-        function shareGratitude() {
-            const url = encodeURIComponent(window.location.href); // Encode current page URL
-            const text = encodeURIComponent("Check out the Infinite Gratitude Generator! Spread some positivity: "); // Message to share
-            const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`; // Construct Twitter URL
-            window.open(shareUrl, '_blank'); // Open in new tab
+        function updateCalendar() {
+            const calendarGrid = document.getElementById("calendarGrid");
+            calendarGrid.innerHTML = "";
+
+            const today = new Date();
+            let daysToShow = viewMode === "weekly" ? 7 : 30;
+            const daysArray = Array.from({ length: daysToShow }, (_, i) => {
+                let date = new Date();
+                date.setDate(today.getDate() - i);
+                return date.toDateString();
+            }).reverse();
+
+            daysArray.forEach(date => {
+                const dayDiv = document.createElement("div");
+                dayDiv.classList.add("day");
+                dayDiv.textContent = new Date(date).getDate();
+
+                if (streakDays.includes(date)) {
+                    dayDiv.classList.add("streak-day");
+                }
+
+                if (date === today.toDateString()) {
+                    dayDiv.classList.add("current-day");
+                }
+
+                calendarGrid.appendChild(dayDiv);
+            });
         }
 
-        // Generate an initial gratitude message when the page loads
-        document.body.onload = generateGratitude;
+        function setView(mode) {
+            viewMode = mode;
+            updateCalendar();
+        }
+
+        function generateGratitude() {
+            updateStreak();
+        }
+
+        document.body.onload = () => {
+            document.getElementById("streakCount").textContent = streak.count;
+            document.getElementById("highStreak").textContent = streak.high;
+            updateCalendar();
+        };
     </script>
 </body>
 </html>
