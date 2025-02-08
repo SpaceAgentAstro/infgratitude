@@ -6,11 +6,11 @@
     <title>Infinite Gratitude Generator</title>
     <style>
         :root {
-            background: rgb(138,0,255);
-            background: -moz-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
-            background: -webkit-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
-            background: linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
-            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endColorstr="#00fff1",GradientType=1);
+            --bg-light: rgb(138,0,255);
+            --bg-light: -moz-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
+            --bg-light: -webkit-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
+            --bg-light: linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
+            --bg-light: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endColorstr="#00fff1",GradientType=1);
             --text-light: #333;
             --text-dark: #f0f0f0;
             --btn-light: #ff9a9e;
@@ -84,6 +84,13 @@
             background: var(--btn-dark);
             color: white;
         }
+
+        .dark-mode {
+            --bg-light: #333;
+            --text-light: #f0f0f0;
+            --btn-light: #ff758c;
+            --btn-dark: #ff9a9e;
+        }
     </style>
 </head>
 <body>
@@ -101,12 +108,20 @@
     </div>
 
     <script>
+        let isDarkMode = false;
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+        }
+
         function generateGratitude() {
             const messages = [
                 "You are amazing! Keep going!", 
                 "Gratitude unlocks happiness!", 
                 "You are making a difference!", 
-                "Every day is a new blessing!"
+                "Every day is a new blessing!",
+                "Your presence matters!",
             ];
             const message = messages[Math.floor(Math.random() * messages.length)];
             document.getElementById("gratitudeMessage").textContent = message;
