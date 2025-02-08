@@ -6,11 +6,11 @@
     <title>Infinite Gratitude Generator</title>
     <style>
         :root {
-background: rgb(138,0,255);
-background: -moz-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
-background: -webkit-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
-background: linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endColorstr="#00fff1",GradientType=1);
+            background: rgb(138,0,255);
+            background: -moz-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
+            background: -webkit-linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
+            background: linear-gradient(90deg, rgba(138,0,255,1) 0%, rgba(10,141,255,1) 62%, rgba(0,255,241,1) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endColorstr="#00fff1",GradientType=1);
             --text-light: #333;
             --text-dark: #f0f0f0;
             --btn-light: #ff9a9e;
@@ -28,6 +28,24 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endCo
             height: 100vh;
             flex-direction: column;
             transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .top-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-right {
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
 
         .container {
@@ -41,50 +59,18 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endCo
             transition: background 0.3s ease;
         }
 
-        h1 {
-            font-size: 2.2em;
-        }
-
-        .streak-container {
+        .message {
             margin-top: 15px;
-            padding: 10px;
+            padding: 20px;
+            background: #ffeb3b;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-top: 15px;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-        }
-
-        .day {
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
-            font-size: 1em;
-            text-align: center;
-            border-radius: 5px;
-            background: #ddd;
-            transition: background 0.3s ease;
-        }
-
-        .streak-day {
-            background: var(--btn-light) !important;
-            color: white;
+            font-size: 1.5em;
             font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .current-day {
-            border: 2px solid var(--btn-dark);
-            font-weight: bold;
-        }
-
-        .controls button, .toggle-buttons button {
+        .controls button {
             padding: 10px 15px;
             margin: 5px;
             font-size: 1em;
@@ -94,51 +80,21 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endCo
             transition: 0.3s;
         }
 
-        .controls button:hover, .toggle-buttons button:hover {
+        .controls button:hover {
             background: var(--btn-dark);
             color: white;
-        }
-
-        .theme-toggle {
-            margin-top: 10px;
-            padding: 8px 12px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            background: var(--btn-dark);
-            color: white;
-        }
-
-        .message {
-            margin-top: 15px;
-            padding: 10px;
-            background: #ffeb3b;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            display: none;
         }
     </style>
 </head>
 <body>
+    <div class="top-left">
+        🔥 Streak: <span id="streakCount">0</span> days | 🌟 Highest Streak: <span id="highStreak">0</span> days
+    </div>
+
+    <button class="top-right theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+
     <div class="container">
-        <h1>Infinite Gratitude Generator</h1>
-
-        <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
-
-        <div class="streak-container">
-            🔥 Streak: <span id="streakCount">0</span> days | 🌟 Highest Streak: <span id="highStreak">0</span> days
-            <div class="toggle-buttons">
-                <button onclick="setView('weekly')">Weekly</button>
-                <button onclick="setView('monthly')">Monthly</button>
-            </div>
-            <div class="calendar" id="calendarGrid"></div>
-        </div>
-
-        <div class="message" id="gratitudeMessage"></div>
-
+        <div class="message" id="gratitudeMessage">Press the button for a dose of gratitude!</div>
         <div class="controls">
             <button onclick="generateGratitude()">Generate Gratitude</button>
         </div>
@@ -146,7 +102,6 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endCo
 
     <script>
         function generateGratitude() {
-            updateStreak();
             const messages = [
                 "You are amazing! Keep going!", 
                 "Gratitude unlocks happiness!", 
@@ -154,9 +109,7 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#8a00ff",endCo
                 "Every day is a new blessing!"
             ];
             const message = messages[Math.floor(Math.random() * messages.length)];
-            const messageDiv = document.getElementById("gratitudeMessage");
-            messageDiv.textContent = message;
-            messageDiv.style.display = "block";
+            document.getElementById("gratitudeMessage").textContent = message;
         }
     </script>
 </body>
