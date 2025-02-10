@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -146,6 +146,8 @@
                 <option value="gratitude">Gratitude</option>
                 <option value="motivation">Motivation</option>
                 <option value="inspiration">Inspiration</option>
+                <option value="encouragement">Encouragement</option>
+                <option value="affirmation">Affirmation</option>
             </select>
             <input type="text" id="customTheme" placeholder="Enter custom theme (optional)" onkeyup="showSuggestions()">
             <div class="suggestions" id="suggestionBox"></div>
@@ -204,6 +206,10 @@
                 message = "I am motivated to achieve " + customTheme + " today.";
             } else if (messageType === "inspiration") {
                 message = "I am inspired by " + customTheme + " today.";
+            } else if (messageType === "encouragement") {
+                message = "I am encouraged by " + customTheme + " today.";
+            } else if (messageType === "affirmation") {
+                message = "I affirm that " + customTheme + " is possible today.";
             }
 
             document.getElementById("gratitudeMessage").textContent = message;
@@ -219,6 +225,10 @@
                 highStreak = streakCount;
                 document.getElementById("highStreak").textContent = highStreak;
             }
+
+            // Use Web Speech API to read the message aloud
+            const utterance = new SpeechSynthesisUtterance(message);
+            speechSynthesis.speak(utterance);
         }
 
         // Initialize the message
